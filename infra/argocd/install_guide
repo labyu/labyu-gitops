@@ -1,0 +1,56 @@
+kubectl create namespace argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/stable/manifests/install.yaml
+
+
+
+VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+
+curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+
+chmod +x /usr/local/bin/argocd
+
+# https://argoproj-labs.github.io/argocd-notifications/
+# setup notification secrets
+
+
+# 아래 실행 필요 
+kubectl patch app <my-app> -n argocd -p '{"metadata": {"annotations": {"recipients.argocd-notifications.argoproj.io":"slack:<my-channel>"}}}' --type merge
+
+# Notification Trigger, Template Configuration
+kubectl apply -n argocd -f - << EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  config.yaml: |
+    triggers:
+      - name: on-sync-succeeded
+        enabled: true
+        template: custom-on-sync-succeeded
+      - name: on-sync-failed
+        enabled: true
+        template: custom-on-sync-failed
+      - name: on-health-degraded
+        enabled: true
+        template: custom-on-health-degraded
+    templates:
+      - name: custom-on-sync-succeeded
+        body: |
+          {{if eq .context.notificationType "slack"}}:heavy_check_mark:{{end}} 애플리케이션 {{.app.metadata.name}} 서버 배포를 완료했습니다.
+          시간 : {{.app.status.operationState.finishedAt}}
+          확인 : {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true
+      - name: custom-on-sync-failed
+        body: |
+          {{if eq .context.notificationType "slack"}}:octagonal_sign:{{end}} 애플리케이션 {{.app.metadata.name}} 서버 배포를 실패했습니다.
+          에러 : {{.app.status.operationState.message}}
+          시간 : {{.app.status.operationState.finishedAt}}
+          확인 : {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true
+      - name: custom-on-health-degraded
+        body: |
+          {{if eq .context.notificationType "slack"}}:heavy_check_mark:{{end}} 애플리케이션 {{.app.metadata.name}} 서버가 비정상적입니다.
+          시간 : {{.app.status.operationState.finishedAt}}
+          확인 : {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true
+EOF
