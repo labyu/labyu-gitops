@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins-master-ingress
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins-master
+    app.kubernetes.io/instance: jenkins-master-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+      - jenkins.labyu.me
+    secretName: labyu-tls-secret
+  rules:
+  - host: jenkins.labyu.me
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jenkins-master-svc
+          servicePort: 80

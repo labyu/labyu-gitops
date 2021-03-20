@@ -18,7 +18,14 @@ kubectl -n default create secret tls $SECRET \
 ###############
 # Argocd
 ###############
+NS=argocd
 kubectl -n argocd delete secret $SECRET
-kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kubectl apply --namespace=argocd -f -
+kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kubectl apply --namespace=$NS -f -
 
 
+###############
+# Jenkins
+###############
+NS=jenkins
+kubectl -n argocd delete secret $SECRET
+kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kubectl apply --namespace=$NS -f -

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baruntravel-backend-deploy
+  namespace: baruntravel
+  labels:
+    app.kubernetes.io/name: baruntravel-backend
+    app.kubernetes.io/instance: baruntravel-backend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: baruntravel-backend-pod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: baruntravel-backend
+        app.kubernetes.io/instance: baruntravel-backend-pod
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secrets
+      containers:
+        - name: baruntravel-backend-pod
+          image: labyu/baruntravel:backend-1
+          ports:
+            - containerPort: 8080
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1000Mi"
+              cpu: "250m"
+          envFrom:
+            - secretRef: 
+                name: baruntravel-backend-secret
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baruntravel-frontend-deploy
+  namespace: baruntravel
+  labels:
+    app.kubernetes.io/name: baruntravel-frontend
+    app.kubernetes.io/instance: baruntravel-frontend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: baruntravel-frontend-pod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: baruntravel-frontend
+        app.kubernetes.io/instance: baruntravel-frontend-pod
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secrets
+      containers:
+        - name: baruntravel-frontend-pod
+          image: labyu/baruntravel:frontend-1
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1000Mi"
+              cpu: "250m"
+
+

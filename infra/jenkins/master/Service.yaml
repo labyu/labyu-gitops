@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-master-svc
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins-master
+    app.kubernetes.io/instance: jenkins-master-svc
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: jenkins-master-pod
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: agent
+      port: 50000
+      targetPort: 50000

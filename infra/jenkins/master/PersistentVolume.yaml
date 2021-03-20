@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-master-pv
+  namespace: jenkins
+  labels:
+    app.kubernetes.io/name: jenkins-master
+    app.kubernetes.io/instance: jenkins-master-pv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  storageClassName: ""
+  nfs:
+    path: /storage/jenkins
+    server: 192.168.219.210
+

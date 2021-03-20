@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: baruntravel-backend-ingress
+  namespace: baruntravel
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # nginx.ingress.kubernetes.io/proxy-body-size: 1g
+
+spec:
+  tls:
+  - hosts:
+    - api.baruntravel.me
+    secretName: baruntravel-tls-secret
+  rules:
+  - host: api.baruntravel.me
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: baruntravel-backend-svc
+          servicePort: 80
+  - host: baruntravel.me
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: baruntravel-frontend-svc
+          servicePort: 80
