@@ -1,0 +1,80 @@
+pipeline {
+    agent {
+        label 'labyu-inbound-agent'
+    }
+    stages {
+        stage('[Application] Checkout') {
+            steps {
+                git branch: "develop",
+                    credentialsId: 'github-baruntravel',
+                    url: 'git@github.com:TravelPlan-Project/TravelPlan.git'
+            }
+        }
+        stage('[Backend] Build') {
+            steps {
+                sh """#!/bin/bash
+                cd backend
+                ./gradlew -Dfile.encoding=UTF-8 clean build
+                """
+            }
+        }
+        stage('[Backend] Push') {
+            steps {
+                sh """#!/bin/bash
+                cd backend
+                docker build -t labyu/baruntravel:backend-${BUIlD_NUMBER} ./
+                docker push labyu/baruntravel:backend-${BUILD_NUMBER}
+                """
+            }
+        }
+        stage('[Frontend] Build') {
+            steps {
+                sh """#!/bin/bash
+                cd frontend
+                docker build -t labyu/baruntravel:frontend-${BUIlD_NUMBER} ./
+                """
+            }
+        }
+        stage('[Frontend] Push') {
+            steps {
+                sh """#!/bin/bash
+                cd frontend
+                docker push labyu/baruntravel:frontend-${BUILD_NUMBER}
+                """
+            }
+        }
+        stage('[Workspace] Cleanup') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('[GitOps] Checkout') {
+            steps {
+                git branch: "main",
+                    credentialsId: 'github-labyu-gitops',
+                    url: 'git@github.com:labyu/labyu-gitops.git'
+            }
+        }
+        stage('[GitOps] Patch') {
+            steps {
+                sshagent(credentials : ['github-labyu-gitops']) {
+                    sh '''#!/bin/bash
+                        cd app/baruntravel
+                        BEFORE=$(cat Deployment.yaml | grep 'image: labyu/baruntravel:backend-' | sed -e 's/^ *//g' -e 's/ *$//g')
+                        sed -i "s@$BEFORE@image: labyu/baruntravel:backend-$BUILD_NUMBER@g" Deployment.yaml
+    
+                        BEFORE=$(cat Deployment.yaml | grep 'image: labyu/baruntravel:frontend-' | sed -e 's/^ *//g' -e 's/ *$//g')
+                        sed -i "s@$BEFORE@image: labyu/baruntravel:frontend-$BUILD_NUMBER@g" Deployment.yaml
+    
+    
+                        git config user.name labyju
+                        git config user.email labyu2020@gmail.com
+                        git add .
+                        git commit -m "Jenkins Baruntravel Server Version Up $BUILD_NUMBER"
+                        git push origin main
+                    '''
+                }
+            }
+        }
+    }
+}

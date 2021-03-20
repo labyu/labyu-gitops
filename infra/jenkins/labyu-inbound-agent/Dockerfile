@@ -6,6 +6,7 @@ RUN apt update -y
 RUN apt install -y software-properties-common openssl
 
 ## Install Docker
+USER root
 RUN apt-get -y install \
     apt-transport-https \
     ca-certificates \
@@ -26,7 +27,6 @@ RUN apt install -y npm
 RUN npm install -g n
 RUN n stable
 RUN npm install -g npm
-
 ## Run Jenkins
 USER jenkins
 ENTRYPOINT ["jenkins-agent"]

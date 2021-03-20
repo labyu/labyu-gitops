@@ -19,7 +19,9 @@ spec:
     spec:
       containers:
         - name: jenkins-labyu-inbound-agent-pod
-          image: labyu/jenkins-inbound-agent:0.1
+          # image: labyu/testjenkins:test
+          image: labyu/jenkins-inbound-agent:0.2
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
             - containerPort: 50000
