@@ -5,15 +5,15 @@ metadata:
   namespace: argocd
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true" 
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true" 
 spec:
   tls:
-    - hosts:
-        - argocd.labyu.me
-      secretName: argocd-secret
+  - hosts:
+      - argocd.labyu.me
+    secretName: labyu-tls-secret
   rules:
   - host: argocd.labyu.me
     http:
