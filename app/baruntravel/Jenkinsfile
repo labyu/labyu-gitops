@@ -7,7 +7,7 @@ pipeline {
             steps {
                 git branch: "develop",
                     credentialsId: 'github-baruntravel',
-                    url: 'git@github.com:TravelPlan-Project/TravelPlan.git'
+                    url: 'git@github.com:baruntravel/baruntravel.git'
             }
         }
         stage('[Backend] Build') {
