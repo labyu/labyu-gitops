@@ -21,7 +21,7 @@ spec:
         - name: dockerhub-secrets
       containers:
         - name: baruntravel-backend-pod
-          image: labyu/baruntravel:backend-53
+          image: labyu/baruntravel:backend-54
           ports:
             - containerPort: 8080
           imagePullPolicy: Always
@@ -58,7 +58,7 @@ spec:
         - name: dockerhub-secrets
       containers:
         - name: baruntravel-frontend-pod
-          image: labyu/baruntravel:frontend-53
+          image: labyu/baruntravel:frontend-54
           ports:
             - containerPort: 3000
           imagePullPolicy: Always
