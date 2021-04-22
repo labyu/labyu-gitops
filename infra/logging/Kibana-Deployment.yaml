@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deploy
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: kibana
+    app.kubernetes.io/instance: kibana-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: kibana-pod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kibana
+        app.kubernetes.io/instance: kibana-pod
+    spec:
+      containers:
+        - name: kibana-pod
+          image: kibana:7.12.0
+          ports:
+            - containerPort: 5601
+          resources:
+            requests:
+              memory: "2000Mi"
+              cpu: "300m"
+            limits:
+              memory: "2000Mi"
+              cpu: "300m"

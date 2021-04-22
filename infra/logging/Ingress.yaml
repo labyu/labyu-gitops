@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: logging-ingress
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: logging
+    app.kubernetes.io/instance: logging-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - hosts:
+      - kibana.labyu.me
+    secretName: labyu-tls-secret
+  rules:
+  - host: kibana.labyu.me
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kibana-svc
+          servicePort: 80

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-master-deploy
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: elasticsearch-master
+    app.kubernetes.io/instance: elasticsearch-master-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: elasticsearch-master-pod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: elasticsearch-master
+        app.kubernetes.io/instance: elasticsearch-master-pod
+    spec:
+      containers:
+        - name: elasticsearch-master-pod
+          image: elasticsearch:7.12.0
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+          - name: "discovery.type"
+            value: "single-node"
+          resources:
+            requests:
+              memory: "3000Mi"
+              cpu: "300m"
+            limits:
+              memory: "3000Mi"
+              cpu: "300m"

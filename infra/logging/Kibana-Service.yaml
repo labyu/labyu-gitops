@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-svc
+  namespace: logging
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: kibana-pod
+  ports:
+    - name: web
+      port: 80
+      targetPort: 5601
+      protocol: TCP

@@ -29,3 +29,12 @@ kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kube
 NS=jenkins
 kubectl -n $NS delete secret $SECRET
 kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kubectl apply --namespace=$NS -f -
+
+###############
+# Logging
+###############
+NS=logging
+kubectl -n $NS delete secret $SECRET
+kubectl get secret $SECRET --namespace=default -oyaml | grep -v namespace | kubectl apply --namespace=$NS -f -
+
+
